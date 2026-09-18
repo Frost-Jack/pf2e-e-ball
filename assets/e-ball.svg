@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">E-Ball</title>
+  <defs>
+    <radialGradient id="core" cx="34%" cy="28%" r="72%">
+      <stop offset="0" stop-color="#d87357"/>
+      <stop offset="0.48" stop-color="#8f2f2f"/>
+      <stop offset="1" stop-color="#42151c"/>
+    </radialGradient>
+    <linearGradient id="rim" x1="10" y1="8" x2="52" y2="56">
+      <stop stop-color="#f4d48a"/>
+      <stop offset="0.52" stop-color="#b77a2d"/>
+      <stop offset="1" stop-color="#6d3a18"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="28" fill="#261018" stroke="#15080c" stroke-width="2"/>
+  <circle cx="32" cy="32" r="24.5" fill="url(#core)" stroke="url(#rim)" stroke-width="3"/>
+  <path d="M18 17c8-7 22-8 31 1" fill="none" stroke="#f8e3ad" stroke-linecap="round" stroke-width="2.2" opacity=".68"/>
+  <path d="M21 18v28h24v-6H28v-6h14v-5H28v-5h17v-6H21Z" fill="#f3dfad" stroke="#4d2117" stroke-linejoin="round" stroke-width="1.5"/>
+  <path d="M17 48c9 8 24 9 33-1" fill="none" stroke="#8b4f23" stroke-linecap="round" stroke-width="2" opacity=".9"/>
+</svg>

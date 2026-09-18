@@ -1,0 +1,16 @@
+{
+  "pf2e-e-ball": {
+    "Resource": {
+      "Label": "Е-Балл",
+      "Tooltip": "Е-Балл: {value}/{max}"
+    },
+    "Reroll": {
+      "Menu": "Перебросить за Е-Балл",
+      "Message": "Переброшено за Е-Балл"
+    },
+    "Notifications": {
+      "CannotModify": "Вы не можете изменять Е-Баллы персонажа {actor}",
+      "NoResource": "Вам не хватает Е-Балла"
+    }
+  }
+}

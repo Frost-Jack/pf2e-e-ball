@@ -1,0 +1,16 @@
+{
+  "pf2e-e-ball": {
+    "Resource": {
+      "Label": "E-Ball",
+      "Tooltip": "E-Ball: {value}/{max}. Left-click to add, right-click to remove"
+    },
+    "Reroll": {
+      "Menu": "Reroll using an E-Ball",
+      "Message": "Rerolled using an E-Ball"
+    },
+    "Notifications": {
+      "CannotModify": "You cannot change {actor}'s E-Balls",
+      "NoResource": "There are no E-Balls available for this reroll"
+    }
+  }
+}

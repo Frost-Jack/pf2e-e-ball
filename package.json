@@ -1,0 +1,11 @@
+{
+  "name": "pf2e-e-ball",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node --check src/main.js && node --check src/resource.js && node --test",
+    "test": "node --test"
+  }
+}

@@ -1,0 +1,95 @@
+.actor.sheet.character section.window-content .crb-style header.char-header .char-details > .dots {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.actor.sheet.character section.window-content .crb-style header.char-header .char-details .e-ball-resource {
+  margin-left: 1rem;
+}
+
+.e-ball-resource:not(.readonly),
+.e-ball-party-resource:not(.readonly) {
+  cursor: pointer;
+}
+
+.e-ball-resource.readonly,
+.e-ball-party-resource.readonly {
+  cursor: default;
+}
+
+.actor.sheet.character section.window-content .crb-style li.special-resource:has([data-resource="e-ball"]) {
+  display: none;
+}
+
+.e-ball-pips {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.18rem;
+}
+
+.e-ball-pip {
+  display: inline-grid;
+  height: 1rem;
+  place-items: center;
+  width: 1rem;
+}
+
+.e-ball-pip img {
+  border: 0;
+  height: 100%;
+  max-width: none;
+  width: 100%;
+}
+
+.e-ball-pip.empty img {
+  filter: grayscale(1);
+  opacity: 0.28;
+}
+
+.e-ball-pip.filled img {
+  filter: drop-shadow(0 0 2px rgba(240, 194, 96, 0.55));
+}
+
+.sheet.party [data-tab="overview"] .member > .data header.e-ball-enabled {
+  column-gap: 0.45rem;
+  grid: "name resource eball" 1fr "blurb resource eball" min-content / auto max-content max-content;
+}
+
+.sheet.party [data-tab="overview"] .member > .data header .e-ball-party-resource {
+  grid-area: eball;
+}
+
+.sheet.party [data-tab="overview"] .member > .data header .e-ball-party-resource .party-pips {
+  display: flex;
+  gap: 3px;
+  height: auto;
+  width: auto;
+}
+
+.sheet.party [data-tab="overview"] .member > .data header .e-ball-party-resource .e-ball-pip {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.sheet.party [data-tab="overview"] .member > .data header .e-ball-party-resource .e-ball-pip.empty {
+  border: 2px dashed rgba(0, 0, 0, 0.42);
+  border-radius: 50%;
+}
+
+.sheet.party [data-tab="overview"] .member > .data header .e-ball-party-resource .e-ball-pip.empty img {
+  opacity: 0.18;
+}
+
+.e-ball-context-icon,
+.e-ball-reroll-indicator {
+  background: currentColor;
+  display: inline-block;
+  height: 1em;
+  -webkit-mask: url("../assets/e-ball.svg") center / contain no-repeat;
+  mask: url("../assets/e-ball.svg") center / contain no-repeat;
+  width: 1em;
+}
+
+.e-ball-reroll-indicator::before {
+  content: "";
+}
