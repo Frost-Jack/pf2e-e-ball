@@ -45,11 +45,13 @@ env:
 
   # The URL to the module archive associated with the module release being
   # processed by this workflow.
-  release_module_url: "https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/module.zip"
+  release_tag: "${{ github.event.release.tag_name || inputs.tag }}"
+  release_module_url: "https://github.com/${{github.repository}}/releases/download/${{ github.event.release.tag_name || inputs.tag }}/module.zip"
 
 
 on:
-  # Only run this workflow when a release is published.
+  # Run automatically when a release is published, or manually to rebuild an
+  # existing release after fixing the packaging workflow.
   # To modify this workflow when other events occur, see:
   #   - https://docs.github.com/en/actions/using-workflows/triggering-a-workflow
   #   - https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
@@ -60,6 +62,12 @@ on:
   # alter other parts of this workflow.
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to rebuild"
+        required: true
+        type: string
 
 
 jobs:
@@ -70,19 +78,30 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.release_tag }}
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-      # Extract version embedded in the tag.
-      # This step expects the tag to be one of the following formats:
-      #   - "v<major>.<minor>.<patch>" (e.g., "v1.2.3")
-      #   - "<major>.<minor>.<patch>"  (e.g., "1.2.3")
-      #
-      # The version will be used by later steps to fill in the value for the
-      # "version" key required for a valid module manifest.
+      - name: Verify And Build Module
+        run: |
+          npm run check
+          npm run build
+
       - name: Extract Version From Tag
         id: get_version
-        uses: battila7/get-version-action@v2
+        shell: bash
+        run: |
+          version="${release_tag#v}"
+          if [[ ! "$version" =~ ^[0-9]+(\.[0-9]+){1,2}([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid release tag: $release_tag" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
 
       # Modify "module.json" with values specific to the release.
@@ -93,14 +112,13 @@ jobs:
       # commited to the repository, and only exist in the action's filesystem.
       - name: Modify Module Manifest With Release-Specific Values
         id: sub_manifest_link_version
-        uses: cschleiden/replace-tokens@v1
-        with:
-          files: 'module.json'
         env:
-          VERSION: ${{steps.get_version.outputs.version-without-v}}
+          VERSION: ${{ steps.get_version.outputs.version }}
           URL: ${{ env.project_url }}
           MANIFEST: ${{ env.latest_manifest_url }}
           DOWNLOAD: ${{ env.release_module_url }}
+        run: >-
+          node -e "const fs=require('node:fs');const path='module.json';const manifest=JSON.parse(fs.readFileSync(path,'utf8'));Object.assign(manifest,{version:process.env.VERSION,url:process.env.URL,manifest:process.env.MANIFEST,download:process.env.DOWNLOAD});fs.writeFileSync(path,JSON.stringify(manifest,null,2)+'\n');"
 
 
       # Create a "module.zip" archive containing all the module's required files.
@@ -119,14 +137,31 @@ jobs:
             module.json                          \
             README.md                            \
             LICENSE                              \
-            templates                            \
-            scripts/                             \
-            styles/                              \
-            packs/                               \
-            language/                            \
+            assets/                              \
+            dist/                                \
             lang/
           # Don't forget to add a backslash at the end of the line for any
           # additional files or directories!
+
+      - name: Validate Module Archive
+        shell: bash
+        run: |
+          unzip -t module.zip
+          archive_files="$(unzip -Z1 module.zip)"
+          for required in \
+            module.json \
+            dist/main.js \
+            dist/resource.js \
+            dist/styles.css \
+            assets/e-ball.svg \
+            lang/en.json \
+            lang/ru.json
+          do
+            if ! grep -Fxq "$required" <<< "$archive_files"; then
+              echo "Required release file is missing: $required" >&2
+              exit 1
+            fi
+          done
 
 
       # Update the GitHub release with the manifest and module archive files.
@@ -135,10 +170,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          name: ${{ github.event.release.name }}
-          draft: ${{ github.event.release.unpublished }}
-          prerelease: ${{ github.event.release.prerelease }}
+          artifactErrorsFailBuild: true
+          replacesArtifacts: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: './module.json, ./module.zip'
-          tag: ${{ github.event.release.tag_name }}
-          body: ${{ github.event.release.body }}
+          artifacts: './module.json,./module.zip'
+          tag: ${{ env.release_tag }}
